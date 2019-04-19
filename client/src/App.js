@@ -22,7 +22,7 @@ class App extends Component {
       name: '',
       location: '',
       hash: '',
-      RescueAddress: '0x23978114C2b631a55dD1696f311085d048aE74Ba',
+      RescueAddress: '0x894F40957831Cd0f683D0420DfD430f4e81422f2',
       isUserEnrolled: false,
       isDonorEnrolled: false,
       owner: '',
@@ -159,7 +159,7 @@ class App extends Component {
     
      
   }
-
+  //***/
    reload = async ( ) => {
     const { contract,  } = this.state
     await contract.methods.getUserBal().call().then(res => this.setState({userBalance: res }))

@@ -19,7 +19,6 @@ contract Rescue {
     
     mapping (address => uint) public balances;
     
-
     //keep track of states of users
     enum Status { Donor, User, Helper }
 
@@ -59,12 +58,10 @@ contract Rescue {
 
     //runs only once on contract deployements sets initial counts to 0
     constructor() public {
-
     owner = msg.sender;
-    userCount = 0;
+    userCount = 66;
     donorCount = 0;
     helperCount = 0;
-    
     }
 
     //user struct
@@ -137,6 +134,7 @@ contract Rescue {
     //returns bool
     function setNewuser(string memory _name, string memory _location) public returns (bool) {
         require(msg.sender != users[msg.sender].user);
+        require(msg.sender != owner);
         require (msg.sender != donors[msg.sender].donor);
         require(msg.sender != helpers[msg.sender].helper);
         
@@ -183,7 +181,7 @@ contract Rescue {
     //@param address of helper to donate to and amount
     //@dev fx is to allow users to make purchases from the helper for disaster relief items
     //if not in the users mapping fx will fail
-    
+
     function userBuyfromHelper(address _to, uint amount) public payable onlyUser returns (bool){
          require(msg.sender == users[msg.sender].user && _to == helpers[_to].helper);
         // require that reciever of donation address is in user mapping

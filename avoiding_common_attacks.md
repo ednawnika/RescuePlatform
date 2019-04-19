@@ -34,3 +34,7 @@ If the device is already in a requested transfer state, if msg sender is not own
 Visibility in functions and state variables:
 
 Each function is clearly defined as external, public, internal or private. State variables are clearly marked as public. 
+
+Alot more notes
+
+Explain how each I get over each 

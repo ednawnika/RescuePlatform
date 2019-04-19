@@ -1,6 +1,5 @@
 pragma solidity ^0.5.0;
 
-// import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 //@title RescuePlatform
 contract Rescue {
 
@@ -45,7 +44,7 @@ contract Rescue {
         require(users[msg.sender].status == Status.Helper);
         _;
     }
-    
+    //**@dev event emitters */
     event userCreated(uint usno, address user, string name, string location, uint bal);
     event helperCreated( uint ddno, address helper, string name, string location, uint bal);
     event donorCreated(uint hpno, address donor, string name, string location, uint bal);
@@ -102,33 +101,32 @@ contract Rescue {
     function getBalance() public view returns (uint){
            return msg.sender.balance; 
     }
-    
+    //get balance of a user balance
      function getUserBal() public view returns (uint){
            return users[msg.sender].bal; 
     }
-    
+    //get balance of a Helper balance
     function getHelperbal() public view returns(uint){
            return helpers[msg.sender].bal;
     }
     
-    //user count functions
+    // get total user count 
     function getUserCount() public view returns (uint){
         return userCount;
     }
+    //get total donor count
     function getDonorCount() public view returns (uint){
         return donorCount;
     }
-
+    //get total helper count
    function getHelperCount() public view returns (uint){
         return helperCount;
     }
-
+    
     function getuserAddresslist() public view returns (address[] memory) {
       return userAddresslist;
     }
     
-
-
     //@param: user will set name and location
     //@dev: upgradeable to uport identity
     //returns bool
@@ -144,7 +142,9 @@ contract Rescue {
         userAddresslist.push(msg.sender);
         return true; 
     }
-
+     //@param: donor will set name and location
+    //@dev: upgradeable to uport identity
+    //returns bool
     function setDonor(string memory _name, string memory _location) public returns (bool) {
         require(msg.sender != users[msg.sender].user);
         require (msg.sender != donors[msg.sender].donor);
@@ -154,7 +154,9 @@ contract Rescue {
         emit donorCreated(donorCount, msg.sender, _name, _location, msg.sender.balance);
         return true;
     }
-   
+    //@param: helper will set name and location
+    //@dev: upgradeable to uport identity
+    //returns bool
     function setHelper(string memory _name, string memory _location) public returns (bool) {
         require(msg.sender != users[msg.sender].user);
         require (msg.sender != donors[msg.sender].donor);
@@ -178,10 +180,9 @@ contract Rescue {
         return true;
     }
     
-    //@param address of helper to donate to and amount
+    //@param address of helper to donate to and amount of donation
     //@dev fx is to allow users to make purchases from the helper for disaster relief items
     //if not in the users mapping fx will fail
-
     function userBuyfromHelper(address _to, uint amount) public payable onlyUser returns (bool){
          require(msg.sender == users[msg.sender].user && _to == helpers[_to].helper);
         // require that reciever of donation address is in user mapping
@@ -191,7 +192,10 @@ contract Rescue {
         emit userTohelper(msg.sender, _to, amount);
         return true;
     }
-    
+
+
+    //@param uint - amount of withdrawal /
+    //@dev allows a registered helper to withdraw the funds recieved from Users
     function helperWithdraw(uint withdrawalAmount) public onlyHelper returns (uint){
         require(msg.sender == helpers[msg.sender].helper && withdrawalAmount <= helpers[msg.sender].bal);
         helpers[msg.sender].bal -= withdrawalAmount;

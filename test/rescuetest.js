@@ -1,5 +1,7 @@
 
 var Rescue = artifacts.require('Rescue')
+let catchRevert = require("./exceptions.js").catchRevert
+
 require('chai')
 
 contract('Rescue', (accounts) => {
@@ -12,7 +14,6 @@ contract('Rescue', (accounts) => {
 
   it('should Identify the owner address of the contract', async () => {
     const rescueInstance = await Rescue.deployed()
-
     const accThree = accounts[2]
     const accTwo = accounts[1]
     const ownerAddress2 = await rescueInstance.owner.call({ from: accThree })
@@ -22,17 +23,14 @@ contract('Rescue', (accounts) => {
     assert.isString(ownerAddress1, 'Is not A string')
   })
 
-  it('owners address can not register as a User on the platform', async () => {
+  it('owners account address can not register as a User on the platform', async () => {
     const rescueInstance = await Rescue.deployed()
     const ownerAddress = accounts[0]
     const name = 'FirstName Test'
     const location = 'Hollywood, CA'
 
-    await rescueInstance.setNewuser(name, location, { from: ownerAddress })
-
-    const userCount = await rescueInstance.getUserCount.call({ from: ownerAddress })
     // assert.equal(userCount, Error, 'They Are not equal')
-    assert.fail(userCount)
+    await catchRevert(rescueInstance.setNewuser(name, location, { from: ownerAddress }))
   })
 
   it('An unregistered address can register as a User on the platform and Update the Usercount to 67', async () => {
@@ -48,21 +46,14 @@ contract('Rescue', (accounts) => {
     assert.equal(userCount, 67, 'The Users amount are not the same')
   })
 
-  it('An registered address as a USER cannot register as a Donator on the platform', async () => {
+  it('An ALREADY registered address as a USER cannot register as a Donator on the platform', async () => {
     const rescueInstance = await Rescue.deployed()
-    const newAddress = accounts[1]
-    const name = 'AlreadyRegistered Name Test'
+    const newAddress = accounts[2]
+    const name = 'Not Registered Name Test'
     const location = 'Hollywood, GA'
 
     await rescueInstance.setNewuser(name, location, { from: newAddress })
-
-    const userCount = await rescueInstance.getUserCount.call({ from: newAddress })
-
-    await rescueInstance.setDonor(name, location, { from: newAddress })
-
-    const donorCount = await rescueInstance.getDonorCount.call({ from: newAddress })
     //* *@dev if donorCount is 0 that means setDonor tx failed  */
-    assert.equal(donorCount, 0, 'The donor count are not the same')
-    assert.equal(userCount, 68, 'The user count are not the same')
+    await catchRevert(rescueInstance.setDonor(name, location, { from: newAddress }))
   })
 })
